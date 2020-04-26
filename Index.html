@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+        <title>Snake</title>
+    </head>
+    <!-- Need to update picture visualization of the apple using CSS -->
+    <!-- <style>
+        .appleX {
+            color: green;
+        }
+
+        .appleY {
+            color: green;
+        }
+    </style>
+    <div class="appleX"></div>
+    <div class="appleY"></div> -->
+        <body>
+            <canvas id="canvas" width="784" height="784"></canvas>
+            <!-- Will contain JS. Will handle the snake logic and rendering to the canvas. -->
+            <script>
+                
+                
+                var canvas, ctx;
+
+                // When window.onload triggers, it will get the context of the canvas,
+                // an event listener for player key presses, and the canvas redrawing
+                // itself of the snake and apple's new postions.
+                window.onload = function() {
+                    canvas = document.getElementById("canvas");
+                    ctx = canvas.getContext("2d");
+
+                    document.addEventListener("keydown", keyDownEvent);
+
+                    // Will render x times per second / speed of snake's movement
+                    var x = 9;
+                    setInterval(draw, 1000 / x);
+                };
+
+                // Game World where our snake and apple live
+                var gridSize = titleSize = 28; // 28 x 28 grid = 784
+                var nextX = nextY = 0;
+
+                // Snake
+                var defaultTailSize = 3;
+                var tailSize = defaultTailSize;
+                // Snake trail is the snake's body, it will be an array of X and Y positions
+                var snakeTrail = [];
+                // snake X and snake Y is the starting positions of the snake
+                var snakeX = snakeY = 10;
+
+                // Apple
+                var appleX = (appleY = 15);
+
+                // Draw
+                function draw() {
+                    // Move snake in the next position
+                    snakeX += nextX;
+                    snakeY += nextY;
+                    // Making sure the snake does not go out of bounds and reset its position so it looks like it comes from the other side
+                    if (snakeX < 0) {
+                        snakeX = gridSize - 1;
+                    }
+                    if (snakeX > gridSize - 1) {
+                        snakeX = 0;
+                    }
+                    
+                    if (snakeY <  0) {
+                        snakeY = gridSize - 1;
+                    }
+                    if (snakeY > gridSize - 1) {
+                        snakeY = 0;
+                    }
+
+                    // If snake bites apple then the tail size increases
+                    if (snakeX == appleX && snakeY == appleY) {
+                        tailSize++;
+                        appleX = Math.floor(Math.random() * gridSize);
+                        appleY = Math.floor(Math.random() * gridSize);
+                    }
+                
+                    //  Paint Background
+                    ctx.fillStyle = "black";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    // Paint Snake
+                    ctx.fillStyle = "green";
+                    for (var i = 0; i < snakeTrail.length; i++) {
+                        ctx.fillRect(
+                            snakeTrail[i].x * titleSize,
+                            snakeTrail[i].y * titleSize,
+                            titleSize,
+                            titleSize
+                        );
+
+                        // reset snake if it bites its own tail
+                        if (snakeTrail[i].x == snakeX && snakeTrail[i].y == snakeY) {
+                            tailSize = defaultTailSize;
+                        }
+                    }
+
+                    // Paint Apple
+                    ctx.fillStyle = "red";
+                    ctx.fillRect(appleX * titleSize, appleY * titleSize, titleSize, titleSize);
+
+                    // Set Snake Trail
+                    snakeTrail.push({ x: snakeX, y: snakeY });
+
+                    while (snakeTrail.length > tailSize) {
+                        snakeTrail.shift();
+                    }
+                }
+
+                // Input
+                // Key codes represent the arrow keys, starting with the left arrow key and going clockwise
+                // nextX and nextY represent the direction of the snake
+                function keyDownEvent(e) {
+                    switch (e.keyCode) {
+                        case 37:
+                            nextX = -1;
+                            nextY = 0;
+                            break;
+                        case 38: 
+                            nextX = 0;
+                            nextY = -1;
+                            break;
+                        case 39:
+                            nextX = 1;
+                            nextY = 0;
+                            break;
+                        case 40:
+                            nextX = 0;
+                            nextY = 1;
+                            break;
+                    }
+                };
+            </script>
+        </body>
+</html>
